@@ -9,14 +9,7 @@ using Contact_Manager_API.Models;
 
 namespace Contact_Manager_API.Controllers
 {
-    public class CsvContact
-    {
-        public string Name { get; set; }
-        public string DateOfBirth { get; set; }
-        public string Married { get; set; }
-        public string Phone { get; set; }
-        public string Salary { get; set; }
-    }
+   
 
     [Route("api/[controller]")]
     [ApiController]

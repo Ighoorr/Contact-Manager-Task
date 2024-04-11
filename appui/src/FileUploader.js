@@ -11,22 +11,27 @@ const FileUploader = () => {
     const selectedFile = event.target.files[0];
   
     if (!selectedFile) {
-      console.error('No file selected');
+      alert('No file selected');
       return;
     }
-  
+    if (selectedFile.type !== 'text/csv') {
+      alert('Selected file is not a CSV file');
+      return;
+    }
+    
+
     const reader = new FileReader();
   
     reader.onload = async (e) => {
       const text = e.target.result;
-      const lines = text.split('\n'); // Розділяємо текст на рядки
+      const lines = text.split('\n');
   
       const jsonData = [];
   
       for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(','); // Розділяємо рядок на значення за комами
+        const values = lines[i].split(','); 
   
-        if (values.length === 5) { // Перевіряємо, чи кількість значень в рядку відповідає очікуваній кількості полів
+        if (values.length === 5) { 
           const contact = {
             Name: values[0],
             DateOfBirth: values[1] ? new Date(values[1]) : null,
@@ -56,9 +61,6 @@ const FileUploader = () => {
   };
   
 
-  
-  
-
   const sendJsonDataToApi = async (data) => {
     try {
       console.log(data)
@@ -75,7 +77,7 @@ const FileUploader = () => {
       }
   
       const responseData = await response.json();
-      console.log(responseData); // Опрацьовуємо відповідь сервера
+      console.log(responseData); 
     } catch (error) {
       //console.log(error);
       //console.error('Error sending JSON data to API:', error);
@@ -83,10 +85,12 @@ const FileUploader = () => {
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
+    <div className="container mt-4">
+      <h2>Upload CSV File</h2>
+      <input className="form-control mb-4" type="file" accept=".csv" onChange={handleFileChange} />
     </div>
   );
+  
 };
 
 export default FileUploader;

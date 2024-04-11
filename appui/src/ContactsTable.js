@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 function ContactsTable() {
   const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState('');
@@ -37,6 +36,11 @@ function ContactsTable() {
   };
 
   const handleEdit = (id, updatedContact) => {
+    if (!validateContact(updatedContact)) {
+      alert('Invalid format');
+      return;
+    }
+    
     fetch(`https://localhost:44386/api/Contacts/${id}`, {
       method: 'PUT',
       headers: {
@@ -48,7 +52,6 @@ function ContactsTable() {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        // Оновлюємо дані на клієнті
         setContacts(contacts.map(contact => {
           if (contact.id === id) {
             return { ...contact, ...updatedContact };
@@ -70,7 +73,6 @@ function ContactsTable() {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        // Видаляємо контакт зі списку на клієнті
         setContacts(contacts.filter(contact => contact.id !== id));
       })
       .catch(error => {
@@ -101,6 +103,23 @@ function ContactsTable() {
       contact.salary.toString().toLowerCase().includes(filter.toLowerCase())
     );
   });
+  const validateContact = (contact) => {
+    if (!contact.name || !contact.dateOfBirth || !contact.phone || !contact.salary) {
+      console.error('All fields are required');
+      return false;
+    }
+      const phoneRegEx = /^\d{10}$/;
+    if (!contact.phone.match(phoneRegEx)) {
+      console.error('Invalid phone number:', contact.phone);
+      return false;
+    }
+      if (isNaN(contact.salary)) {
+      console.error('Invalid salary:', contact.salary);
+      return false;
+    }
+      return true;
+  };
+ 
 
   return (
     <div className="container mt-4">
@@ -122,7 +141,7 @@ function ContactsTable() {
             <tr key={contact.id}>
               <td contentEditable suppressContentEditableWarning={true} onBlur={(e) => handleEdit(contact.id, { ...contact, name: e.target.innerText })}>{contact.name}</td>
               <td contentEditable suppressContentEditableWarning={true} onBlur={(e) => handleEdit(contact.id, { ...contact, dateOfBirth: e.target.innerText })}>{contact.dateOfBirth}</td>
-              <td contentEditable suppressContentEditableWarning={true} onBlur={(e) => handleEdit(contact.id, { ...contact, married: e.target.innerText === 'Yes' ? true : false })}>{contact.married ? 'Yes' : 'No'}</td>
+              <td contentEditable suppressContentEditableWarning={true} onBlur={(e) => handleEdit(contact.id, { ...contact, married: e.target.innerText.toLowerCase() === 'yes' ? true : false })}>{contact.married ? 'Yes' : 'No'}</td>
               <td contentEditable suppressContentEditableWarning={true} onBlur={(e) => handleEdit(contact.id, { ...contact, phone: e.target.innerText })}>{contact.phone}</td>
               <td contentEditable suppressContentEditableWarning={true} onBlur={(e) => handleEdit(contact.id, { ...contact, salary: e.target.innerText })}>{contact.salary}</td>
               <td>
@@ -132,7 +151,14 @@ function ContactsTable() {
           ))}
         </tbody>
       </table>
+      <div id="myBlock">
+     
+       <p>ЩОБ СОРТУВАТИ ТРЕБА НАЖАТИ ПО НАЗВІ КОЛОНКИ</p>
+       <p>після завантаження даних треба оновити</p>
+  
+      </div>
     </div>
+    
   );
   
 
