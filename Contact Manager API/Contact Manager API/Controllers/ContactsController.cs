@@ -9,6 +9,15 @@ using Contact_Manager_API.Models;
 
 namespace Contact_Manager_API.Controllers
 {
+    public class CsvContact
+    {
+        public string Name { get; set; }
+        public string DateOfBirth { get; set; }
+        public string Married { get; set; }
+        public string Phone { get; set; }
+        public string Salary { get; set; }
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class ContactsController : ControllerBase
@@ -26,6 +35,7 @@ namespace Contact_Manager_API.Controllers
         {
             return await _context.Contacts.ToListAsync();
         }
+       
 
         // GET: api/Contacts/5
         [HttpGet("{id}")]
@@ -39,6 +49,32 @@ namespace Contact_Manager_API.Controllers
             }
 
             return contact;
+        }
+
+        [HttpPost("csv")]
+        public IActionResult PostCsvContacts([FromBody] List<Contact> csvContacts)
+        {
+            try
+            {
+                /*var contacts = csvContacts.Select(csvContact => new Contact
+                {
+                    Name = csvContact.Name,
+                    DateOfBirth = DateTime.Parse(csvContact.DateOfBirth),
+                    Married = bool.Parse(csvContact.Married),
+                    Phone = csvContact.Phone,
+                    Salary = decimal.Parse(csvContact.Salary)
+                }).ToList();
+              */
+                
+                _context.Contacts.AddRange(csvContacts);
+                _context.SaveChanges();
+
+                return Ok("CSV data received and saved successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}. Inner exception: {ex.InnerException?.Message}");
+            }
         }
 
         // PUT: api/Contacts/5
