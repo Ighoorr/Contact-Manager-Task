@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import 'bootstrap/dist/css/bootstrap.css';
 //import * as Papa from 'papaparse';
 
 const FileUploader = () => {
